@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoLab | کالبدشکافی خودرو</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- هدر -->
+  <header class="header">
+    <button id="gameBtn" class="btn-icon title="حالت عیب یابی">🎮</button>
+    <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+  <button id="homeBtn" class="btn-icon" style="padding: 4px 8px; font-size: 1rem;" title="صفحه اصلی">🏠</button>
+  🔧 AutoLab
+</div>
+    <div class="header-actions">
+      <button id="aboutBtn" class="btn-icon" title="درباره پروژه">ℹ️</button>
+      <button id="troubleshootBtn" class="btn-icon" title="عیب‌یابی">🔍</button>
+      <button id="themeToggle" class="btn-icon" title="تغییر تم">🌙</button>
+      <button id="compareBtn" class="btn-icon" title="حالت مقایسه">⚖️</button>
+      <button id="favViewBtn" class="btn-icon" title="علاقه‌مندی‌ها">⭐</button>
+    </div>
+  </header>
+
+  <!-- صفحه گالری -->
+ <main id="galleryView" class="view active">
+  <h1 class="page-title">یک خودرو انتخاب کن</h1>
+  <p class="page-subtitle">روی خودرو کلیک کن تا قطعاتش را از نزدیک ببینی</p>
+  
+  <!-- دکمه‌های فیلتر برند -->
+  <div class="brand-filters">
+    <button class="brand-btn active" data-brand="all">همه خودروها</button>
+    <button class="brand-btn" data-brand="ikco">ایران‌خودرو</button>
+    <button class="brand-btn" data-brand="saipa">سایپا</button>
+     <select id="sortSelect" class="sort-select">
+    <option value="default">مرتب‌سازی: پیش‌فرض</option>
+    <option value="high">بیشترین قابلیت اطمینان</option>
+    <option value="low">کمترین قابلیت اطمینان</option>
+  </select>
+  </div>
+
+  <!-- نوار جستجوی ماشین -->
+  <div class="filter-section" style="margin-bottom: 24px;">
+    <input id="carSearchInput" type="text" placeholder="🔍 جستجوی نام خودرو (مثلاً: پژو، ساینا، تارا...)" />
+  </div>
+
+  <div id="carGrid" class="car-grid"></div>
+  <div id="noResults" style="text-align: center; color: var(--text-muted); padding: 40px; display: none;">
+    🚗 خودرویی با این فیلتر یا نام پیدا نشد!
+  </div>
+</main>
+  <!-- صفحه جزئیات خودرو -->
+ <main id="detailView" class="view">
+  <button id="backBtn" class="back-btn">→ بازگشت</button>
+  <button id="backToCarBtn" class="back-btn" style="display: none; color: var(--danger); font-weight: bold;">🔙 بازگشت به کل ماشین</button>
+  
+  <div class="detail-header" style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
+    <h2 id="carTitle"></h2>
+    <div id="reliabilityBadge" class="badge" style="background: var(--accent); color: #000; font-weight: bold;"></div>
+  </div>
+
+  <section class="filter-section" style="margin-top: 20px; margin-bottom: 40px;">
+    <input id="searchInput" type="text" placeholder="🔍 جستجوی قطعه..." style="width: 100%;" />
+  </section>
+
+  <div class="detail-layout">
+    <!-- صحنه انفجار قطعات -->
+    <div id="explodeStage" class="explode-stage">
+      <div id="carContainer" class="car-container"></div>
+      <canvas id="particleCanvas"></canvas>
+    </div>
+
+    <!-- ستون کناری (پنل توضیحات + نمودار) -->
+    <aside class="side-panel">
+      <div id="partPanel" class="part-panel">
+        <div class="panel-empty"><p>👈 روی یک قطعه کلیک کن</p></div>
+        <div class="panel-content" hidden>
+          <h3 id="partName"></h3>
+          <p id="partDesc"></p>
+          <div class="issues-box">
+            <h4>⚠️ ایرادهای رایج سازنده‌ها</h4>
+            <ul id="partIssues"></ul>
+          </div>
+          <button id="favBtn" class="fav-btn">⭐ افزودن به علاقه‌مندی</button>
+          <button id="viewSubPartsBtn" class="fav-btn" style="display: none; margin-top: 10px; background: var(--primary); color: white;">🔍 مشاهده اجزای داخلی</button>
+        </div>
+      </div>
+
+      <section class="chart-section">
+        <h3>📊 نمره‌ی قطعات</h3>
+        <div id="chart" class="chart"></div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- بخش مینی گیم -->
+  <section id="gameSection" class="game-section" style="display: none;">
+    <h3>🎯 چالش عیب‌یابی</h3>
+    <p id="gameQuestion">در حال بارگذاری سوال...</p>
+    <p id="gameFeedback" class="feedback"></p>
+  </section>
+
+  <!-- کادر مشخصات فنی  -->
+  <div id="carSpecs" class="specs-grid"></div>
+
+</main>
+
+  <!-- صفحه علاقه‌مندی‌ها -->
+<main id="favoritesView" class="view">
+  <button id="backFromFavBtn" class="back-btn">→ بازگشت</button>
+  <h1 class="page-title">⭐ قطعات مورد علاقه‌ی شما</h1>
+  <p class="page-subtitle">لیست قطعاتی که ذخیره کرده‌اید</p>
+  <div id="favoritesList" class="car-grid"></div>
+</main>
+
+<!-- صفحه عیب‌یابی هوشمند -->
+<main id="troubleshootView" class="view">
+  <button id="backFromTroubleshootBtn" class="back-btn">→ بازگشت</button>
+  <h1 class="page-title">🔍 عیب‌یابی هوشمند خودرو</h1>
+  <p class="page-subtitle">مشکل ماشین خود را تایپ کنید تا علت و راه‌حل آن را ببینید</p>
+  
+  <div class="filter-section" style="margin-bottom: 24px;">
+    <input id="troubleshootSearchInput" type="text" placeholder="مثال: لرزش، دود سفید، جوش آوردن، چراغ چک..." />
+  </div>
+
+  <div id="troubleshootResults" class="troubleshoot-grid"></div>
+  <div id="noTroubleshootResults" style="text-align: center; color: var(--text-muted); padding: 40px; display: none;">
+    ❌ مشکلی با این عنوان پیدا نشد. کلمات دیگری را امتحان کنید.
+  </div>
+</main>
+
+  <!-- مودال مقایسه -->
+  <div id="compareModal" class="modal" hidden>
+    <div class="modal-content">
+      <button id="closeCompare" class="modal-close">✕</button>
+      <h2>⚖️ مقایسه‌ی خودروها</h2>
+      <div class="compare-selectors">
+        <select id="compareA"></select>
+        <span>vs</span>
+        <select id="compareB"></select>
+      </div>
+      <div id="compareResult" class="compare-result"></div>
+      <button id="downloadCompareBtn" style="width: 100%; padding: 12px; margin-top: 20px; background: var(--primary); color: white; border: none; border-radius: 8px; font-family: inherit; font-weight: bold; cursor: pointer; font-size: 1rem;">📸 دانلود تصویر مقایسه</button>
+    </div>
+  </div>
+
+    <!-- مودال درباره پروژه -->
+<div id="aboutModal" class="modal" hidden>
+  <div class="modal-content" style="text-align: center;">
+    <button id="closeAbout" class="modal-close">✕</button>
+    <h2 style="color: var(--primary); margin-bottom: 20px;">🔧 درباره AutoLab</h2>
+    <p style="line-height: 1.8; margin-bottom: 16px; text-align: justify;">
+      <strong>AutoLab</strong> یک پلتفرم تخصصی برای کالبدشکافی و بررسی دقیق خودروهای داخلی است. هدف این پروژه کمک به خریداران و علاقه‌مندان به خودرو است تا قبل از خرید یا تعمیر، با قطعات مختلف، عملکرد آن‌ها و ایرادات رایج هر خودرو آشنا شوند.
+    </p>
+    <p style="line-height: 1.8; margin-bottom: 24px;">
+      این پروژه با استفاده از تکنولوژی‌های وب مدرن (HTML, CSS, Vanilla JavaScript) طراحی شده است.
+    </p>
+    <hr style="border: none; border-top: 1px solid var(--border); margin: 20px 0;">
+    <p style="font-size: 0.9rem; color: var(--text-muted);">
+      توسعه‌دهنده: <strong>[امیرحسین ارین ادرین امیرعلی ابتین]</strong>
+    </p>
+  </div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  
+</body>
+</html>
