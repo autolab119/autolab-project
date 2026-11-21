@@ -280,6 +280,12 @@ function selectPart(part, el) {
   favBtn.textContent = isFav ? "✅ در علاقه‌مندی‌ها" : "⭐ افزودن به علاقه‌مندی";
   favBtn.classList.toggle("active", isFav);
   favBtn.onclick = () => toggleFavorite(key, favBtn);
+  if (window.innerwidth < 768) {
+    const panel = document.getElementByid("partpanel");
+    if (panel) {
+      panel.scrollintoview({ behavior: "smooth", block: "start" });
+    }
+  }
 
   // 👇 این بخش برای نمایش دکمه مشاهده قطعات داخلیه 👇
   const viewSubPartsBtn = document.getElementById("viewSubPartsBtn");
